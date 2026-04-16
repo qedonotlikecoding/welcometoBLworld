@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BL 세계에 떨어진 당신 : 공수 유형 테스트</title>
+    <style>
+        :root {
+            --bl-purple: #4b0082;
+            --bl-gold: #ffd700;
+            --bl-dark: #121212;
+            --bl-red: #8b0000;
+            --text-main: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+            background: var(--bl-dark);
+            background-image: radial-gradient(circle at center, #1a1a2e 0%, #0c0c0c 100%);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            background: rgba(20, 20, 20, 0.9);
+            width: 90%;
+            max-width: 500px;
+            padding: 35px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .hidden { display: none; }
+
+        h1 { font-size: 1.6rem; color: var(--bl-gold); cursor: pointer; user-select: none; letter-spacing: 1px; margin-bottom: 10px; }
+        .sub-title { font-size: 0.9rem; color: #888; margin-bottom: 30px; }
+        
+        h2 { font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px; word-break: keep-all; min-height: 4.5em; display: flex; align-items: center; justify-content: center; color: #fff; }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            margin: 12px 0;
+            border: 1px solid #444;
+            border-radius: 12px;
+            background: #1e1e1e;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-size: 0.95rem;
+            text-align: left;
+            word-break: keep-all;
+        }
+        .btn:hover { 
+            background: var(--bl-purple); 
+            color: white; 
+            border-color: var(--bl-gold);
+            transform: scale(1.02);
+        }
+
+        .mode-btn { 
+            background: var(--bl-red); 
+            color: white; 
+            text-align: center; 
+            font-weight: bold; 
+            border: none;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        #progress-bar { width: 100%; height: 4px; background: #333; margin-bottom: 25px; border-radius: 2px; }
+        #progress-inner { height: 100%; width: 0%; background: linear-gradient(to right, var(--bl-purple), var(--bl-gold)); transition: width 0.4s; }
+
+        #result-title { font-size: 1.9rem; color: var(--bl-gold); margin: 25px 0; font-weight: 800; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        #result-desc { line-height: 1.8; text-align: left; background: #161616; padding: 22px; border-radius: 12px; font-size: 0.98rem; border-left: 5px solid var(--bl-gold); }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="start-page">
+        <h1 id="main-title" onclick="triggerEgg()">DEBUT OR DIE</h1>
+        <div class="sub-title">BL 세계에 떨어진 당신, 당신의 유형은?</div>
+        <button class="btn mode-btn" onclick="initTest('gong')">내가 공이라면</button>
+        <button class="btn mode-btn" style="background: var(--bl-purple); box-shadow: 0 4px 15px rgba(75, 0, 130, 0.3);" onclick="initTest('su')">내가 수라면</button>
+    </div>
+
+    <div id="quiz-page" class="hidden">
+        <div id="progress-bar"><div id="progress-inner"></div></div>
+        <div id="question-text"></div>
+        <div id="options-container"></div>
+    </div>
+
+<div id="result-page" class="hidden">
+    <div style="font-size: 0.9rem; color: #888;">당신의 운명적인 키워드는</div>
+    <div id="result-title"></div>
+    <div id="result-quote" style="font-style: italic; color: var(--bl-gold); margin-bottom: 20px; font-size: 1.1rem; font-family: 'Gungsuh', serif;"></div>
+    <div id="result-desc"></div>
+    <button class="btn" style="text-align: center; margin-top: 30px; background: transparent;" onclick="location.reload()">다시 시작하기</button>
+</div>
+
+<script>
+    let clickCount = 0;
+    function triggerEgg() {
+        clickCount++;
+        if (clickCount === 3) {
+            alert("🎤 [제작진 비하인드]\n\n\"당신이 무엇을 선택하든, 이 세계의 작가는 이미 당신을 점찍었습니다.\"");
+            clickCount = 0;
+        }
+    }
+
+    const db = {
+        gong: [
+            { q: "폭우 속, 막다른 골목에서 그와 마주쳤습니다. 당신의 첫 번째 충동은?", options: [{text: "그의 도주로를 차단하고, 오직 나만을 바라보게 만든다.", type: "a"}, {text: "빗속에서 떨고 있는 그에게 아무 말 없이 외투를 벗어준다.", type: "c"}, {text: "이 상황이 마치 잘 짜여진 연극처럼 느껴져 웃음이 난다.", type: "b"}, {text: "그가 스스로 무너져 내릴 때까지 무심하게 지켜본다.", type: "d"}] },
+            { q: "그가 떨리는 목소리로 '더 이상은 무리'라며 선을 긋습니다.", options: [{text: "담담하게 그의 의사를 수용하고 미련 없이 돌아선다.", type: "d"}, {text: "그 선이 무의미해질 때까지 더 깊숙이 그의 삶을 헤집는다.", type: "a"}, {text: "결심이 얼마나 단단한지 확인하고 싶어 더 자극적인 말을 던진다.", type: "b"}, {text: "그가 편해질 수 있다면, 잠시 거리를 두는 아픔을 감수한다.", type: "c"}] },
+            { q: "그가 타인에게 해맑은 미소를 흘리고 있는 모습을 보았습니다.", options: [{text: "멀리서 그 미소를 바라보며 가슴 한구석이 서늘해짐을 느낀다.", type: "c"}, {text: "자연스럽게 끼어들어 분위기를 내 방식대로 주도한다.", type: "b"}, {text: "강하게 그를 감싸 쥐며 소유권을 각인시킨다.", type: "a"}, {text: "흔한 풍경을 본 것처럼 아무 감정 없이 고개를 돌린다.", type: "d"}] },
+            { q: "밀폐된 공간에 단둘뿐인 상황, 당신이 먼저 하는 행동은?", options: [{text: "문을 잠그고 열쇠를 치워버린다. '이제 나갈 방법은 나뿐이야.'", type: "a"}, {text: "읽던 책의 페이지를 넘기며 평소와 다름없이 행동한다.", type: "d"}, {text: "따뜻한 차를 내밀며 그의 긴장을 풀어주려 애쓴다.", type: "c"}, {text: "나른하게 웃으며 밤이 지루하지 않게 말을 건넨다.", type: "b"}] },
+            { q: "그가 필사적으로 숨기려던 상처를 발견했습니다.", options: [{text: "본인이 숨기려 한다면 굳이 아는 척하지 않는다.", type: "d"}, {text: "은근히 그 상처 부위를 자극하며 일렁이는 반응을 살핀다.", type: "b"}, {text: "상처가 나을 때까지 그를 가둔 채 직접 간호한다.", type: "a"}, {text: "알게 된 이상 그냥 둘 수 없어 조용히 약을 챙겨준다.", type: "c"}] },
+            { q: "적막을 깨고 그가 떨리는 목소리로 당신의 이름을 불렀습니다.", options: [{text: "예기치 못한 부름에 심장이 덜컥 내려앉아 시선을 피한다.", type: "c"}, {text: "즉시 그를 향해 몸을 돌려 압박하듯 다가간다.", type: "a"}, {text: "눈썹을 살짝 까딱하며 나른하게 대답한다.", type: "b"}, {text: "대답할 가치가 있는지 가늠해 본 뒤 고개만 까딱인다.", type: "d"}] },
+            { q: "그가 겁에 질린 듯 당신을 뒤로하고 달아납니다.", options: [{text: "도망치는 꼴이 흥미롭다는 듯 뒤에서 지켜본다.", type: "b"}, {text: "닿지 않자 허망하게 그 뒤를 쫓아 뛰기 시작한다.", type: "c"}, {text: "신발 소리를 죽이며 그림자처럼 끝까지 그를 추적한다.", type: "a"}, {text: "이미 멀어진 뒷모습을 보며 미련 없이 걸음을 멈춘다.", type: "d"}] },
+            { q: "그가 차가운 눈초리로 당신의 진심을 추궁하기 시작합니다.", options: [{text: "억울함보다 슬픔이 앞서 상처 입은 눈망울을 보이고 만다.", type: "c"}, {text: "의심해봤자 달라질 건 없다고, 넌 내 손바닥 안이라고 답한다.", type: "a"}, {text: "내가 그렇게 못 미더워? 즐겁다는 듯 되묻는다.", type: "b"}, {text: "믿든 말든, 네 마음대로 하라고 짧게 답한다.", type: "d"}] },
+            { q: "우연히 두 사람의 눈동자가 허공에서 맞부딪칩니다.", options: [{text: "그가 고개를 돌릴 때까지 집요하게 그 눈동자를 꿰뚫어 본다.", type: "a"}, {text: "입가에 묘한 미소를 띠며 은밀한 신호를 보낸다.", type: "b"}, {text: "화들짝 놀라며 먼저 고개를 숙인다.", type: "c"}, {text: "아무런 감정의 동요 없이 담담하게 시선을 거둔다.", type: "d"}] },
+            { q: "그가 당신의 어깨에 기대어 잠들었습니다.", options: [{text: "그가 깰까 봐 숨조차 조심스럽게 내쉬며 온기를 느낀다.", type: "c"}, {text: "어깨가 저려오는 것을 느끼며 조심스럽게 그를 밀어낸다.", type: "d"}, {text: "다시는 도망치지 못하도록 그를 더 단단히 옭아맨다.", type: "a"}, {text: "머리칼을 쓸어내리며 들리지 않을 비밀을 속삭인다.", type: "b"}] },
+            { q: "떠나려는 당신의 옷자락을 잡고 그가 처음으로 '가지 마'라며 매달립니다.", options: [{text: "떨리는 그의 손을 마주 잡으며 자리에 다시 주저앉는다.", type: "c"}, {text: "이미 늦었다며 차갑게 뿌리치고 문을 나선다.", type: "d"}, {text: "왜? 내가 없으면 죽을 것 같아? 질문하며 즐긴다.", type: "b"}, {text: "안 가. 아니, 못 가. 내가 널 두고 어디 가겠어.", type: "a"}] },
+            { q: "단둘이 있는 공간, 공기마저 멈춘 듯한 무거운 정적이 흐릅니다.", options: [{text: "그가 대답할 수밖에 없는 질문으로 상황을 주도한다.", type: "a"}, {text: "어색함을 견디지 못해 아무 말이라도 내뱉으려 애쓴다.", type: "c"}, {text: "이 긴장감이 나쁘지 않다는 듯 느긋하게 감상한다.", type: "b"}, {text: "침묵이 흐르든 말든 신경 쓰지 않고 제 할 일을 한다.", type: "d"}] },
+            { q: "그가 당신을 향해 날 선 화를 내비칩니다.", options: [{text: "당황하며 그의 화를 가라앉히기 위해 안절부절못한다.", type: "c"}, {text: "무표정하게 대응하며 상황이 끝나길 기다린다.", type: "d"}, {text: "더 화내보라고, 그게 네 진심이라면 더더욱이라고 자극한다.", type: "a"}, {text: "픽 웃으며 가벼운 농담으로 응수한다.", type: "b"}] },
+            { q: "그가 침대 위에서 열에 들떠 괴로워하고 있습니다.", options: [{text: "그가 나만 의지할 수 있도록 외부와 차단한 채 곁을 지킨다.", type: "a"}, {text: "수건을 갈아주며 속삭인다. '아프니까 좀 솔직해지네?'", type: "b"}, {text: "울 것 같은 얼굴로 지극정성으로 간호한다.", type: "c"}, {text: "약봉지를 머리맡에 던져두고 무심히 돌아선다.", type: "d"}] },
+            { q: "그가 당신을 밀어내야만 했던 처절한 이유를 알게 되었습니다.", options: [{text: "그게 뭐? 그런 건 방해 안 된다며 더 집요하게 파고든다.", type: "a"}, {text: "아, 그래서 그랬던 거야? 흥미롭다는 듯 눈을 반짝인다.", type: "b"}, {text: "그의 행동이 이해가 가자 가슴 아파하며 손을 내민다.", type: "c"}, {text: "납득할 만한 이유라 생각하며 그가 원하는 대로 거리를 둔다.", type: "d"}] },
+            { q: "그가 당신의 존재를 지우려는 듯 대놓고 피하기 시작합니다.", options: [{text: "어디를 가든 나타나 나를 의식할 수밖에 없게 만든다.", type: "a"}, {text:"그가 질색할 만한 상황을 만들어 얼굴을 마주하게 유도한다.", type: "b"}, {text: "멀어지는 마음이 느껴져 혼자 눈물짓는다.", type: "c"}, {text: "피한다면 쫓지 않는다. 인연이 다했다고 생각한다.", type: "d"}] },
+            { q: "단단해 보이던 그가 결국 당신 앞에서 눈물을 터뜨립니다.", options: [{text: "말없이 그의 뒤통수를 감싸 안아 가슴팍에 가두어버린다.", type: "a"}, {text: "눈물을 훔쳐내며 미소를 짓는다. '예쁘네, 우는 거.'", type: "b"}, {text: "같이 눈시울이 붉어져서 서툰 위로를 건넨다.", type: "c"}, {text: "그가 진정될 때까지 지켜보다가 손수건을 건넨다.", type: "d"}] },
+            { q: "아무도 모르는 곳으로 그와 단둘이 여행을 떠나게 되었습니다.", options: [{text: "그가 내 시야에서 벗어나지 못하도록 모든 일정을 장악한다.", type: "a"}, {text: "낯선 환경의 긴장감을 즐기며 아슬아슬한 유희를 만끽한다.", type: "b"}, {text: "오직 둘만의 추억을 만들 생각에 설레하며 그를 챙킨다.", type: "c"}, {text: "여행지에 도착해서도 각자의 시간을 존중하며 보낸다.", type: "d"}] },
+            { q: "그가 당신의 인내심을 확인하려는 듯 위험한 시험을 던집니다.", options: [{text: "시험의 판을 뒤엎고 그가 나에게 굴복하게 만든다.", type: "a"}, {text: "의도를 뻔히 알면서도 속아주는 척 능청스럽게 대처한다.", type: "b"}, {text: "그의 말 한마디에 가슴이 철렁 내려앉으며 흔들린다.", type: "c"}, {text: "유치한 시험에는 관심 없다는 듯 냉담함을 유지한다.", type: "d"}] },
+            { q: "그가 정말로 당신을 떠날 준비를 하는 것 같습니다.", options: [{text: "발목을 묶어서라도 절대 내보내지 않을 계획을 세운다.", type: "a"}, {text: "갈 수 있으면 가보라고 도발하며 미끼를 던진다.", type: "b"}, {text: "애원하며 바짓가랑이라도 붙잡고 싶어한다.", type: "c"}, {text: "떠날 사람은 잡지 않는다는 생각으로 묵묵히 지켜본다.", type: "d"}] },
+            { q: "우연히 서로의 손끝이 맞닿았습니다.", options: [{text: "기회를 놓치지 않고 깍지를 꽉 쥔다.", type: "a"}, {text: "손가락을 가볍게 간지럽히듯 장난치며 기류를 만든다.", type: "b"}, {text: "전기에 감전된 듯 깜짝 놀라며 손을 뒤로 감춘다.", type: "c"}, {text: "별일 아니라는 듯 아무런 동요 없이 손을 뗀다.", type: "d"}] },
+            { q: "그가 뚫어질 듯 당신을 바라보고 있습니다.", options: [{text: "포식자의 눈빛으로 마주하며 그가 눈을 돌리게 만든다.", type: "a"}, {text: "내 얼굴에 뭐 묻었어? 짓궂은 미소를 보낸다.", type: "b"}, {text: "시선이 느껴지자마자 귀끝이 빨개지며 당황한다.", type: "c"}, {text: "보든 말든 무심하게 제 일에만 몰두한다.", type: "d"}] },
+            { q: "격렬한 다툼 끝에 서늘한 냉기만 남았습니다.", options: [{text: "그를 벽으로 밀어붙이며 육체적인 압박으로 상황을 끝낸다.", type: "a"}, {text: "아무 일 없었다는 듯 농담을 던지며 분위기를 전환한다.", type: "b"}, {text: "먼저 고개를 숙이며 사과를 건넨다.", type: "c"}, {text: "먼저 연락 올 때까지 혹은 잊힐 때까지 방치한다.", type: "d"}] },
+            { q: "그가 지친 얼굴로 묻습니다. '넌 도대체 나한테 뭐야?'", options: [{text: "네가 평생 벗어날 수 없는 족쇄, 혹은 악몽.", type: "a"}, {text: "글쎄, 난 네가 생각하는 무엇이든 될 수 있어.", type: "b"}, {text: "네가 기댈 수 있는 유일한 안식처가 되고 싶은 사람.", type: "c"}, {text: "그냥 아는 사람. 그 이상도 이하도 아냐.", type: "d"}] },
+            { q: "이 긴 이야기의 마침표, 당신이 선택하는 결말은?", options: [{text: "부서지더라도 결코 놓아주지 않는 영원한 구속.", type: "a"}, {text: "잊을 수 없는 흉터를 남겨 평생 나를 기억하게 만드는 것.", type: "b"}, {text: "모든 상처를 껴안고 평범하게 곁을 지키는 삶.", type: "c"}, {text: "새벽 공기 속으로 혼자 걸어 나가는 고독한 뒷모습.", type: "d"}] }
+        ],
+        su: [
+            { q: "폭우 속 골목, 그가 당신의 턱을 들어 올리며 도망칠 곳은 없다고 읊조립니다.", options: [{text: "그의 손길에 몸을 떨면서도 기묘한 안도감을 느낀다.", type: "a"}, {text: "젖은 속눈썹 사이로 그를 응시하며 어디 한 번 해보라고 비웃는다.", type: "b"}, {text: "겁에 질린 눈으로 그의 옷자락을 붙잡으며 애원한다.", type: "c"}, {text: "초점 없는 눈으로 빗줄기만 바라보며 상황이 끝나길 기다린다.", type: "d"}] },
+            { q: "그가 당신을 밀어붙이며 주도권은 자신에게 있다고 선언합니다.", options: [{text: "내가 그에게서 벗어날 수 없음을 실감한다.", type: "a"}, {text: "그의 목에 팔을 감으며 속삭인다. '그래서, 뭘 하고 싶은데?'", type: "b"}, {text: "슬픈 표정으로 왜 꼭 상처를 줘야만 하는지 묻는다.", type: "c"}, {text: "'마음대로 해.' 짧게 대답하고는 시선을 돌려버린다.", type: "d"}] },
+            { q: "그가 질투에 눈이 멀어 당신을 거칠게 끌고 갑니다.", options: [{text: "자책감에 고개를 숙인 채 그의 처분만 기다린다.", type: "a"}, {text: "화가 난 그의 반응이 흥미로워 상황을 즐기며 더 자극한다.", type: "b"}, {text: "당황하며 오해라고 설명하고 그를 달래려 애쓴다.", type: "c"}, {text: "끌려가는 와중에도 무표정하게 그의 집착이 피곤하다고 느낀다.", type: "d"}] },
+            { q: "그가 당신을 방에 가두고 열쇠를 치워버립니다. 나갈 방법은 그뿐입니다.", options: [{text: "공포를 느끼지만 그가 나를 놓지 않을 거라는 사실에 안심한다.", type: "a"}, {text: "침대 위에 나른하게 앉아 손짓한다. '내가 무서워할 줄 알았어?'", type: "b"}, {text: "떨리는 목소리로 그를 부르며 제발 대화로 풀자고 설득한다.", type: "c"}, {text: "침대 구석에 누워 잠을 청하며 그를 투명인간 취급한다.", type: "d"}] },
+            { q: "그가 당신의 상처를 발견하고 붕대를 거칠게 풀어헤칩니다.", options: [{text: "들켜버린 비밀에 몸을 떨며 그가 나를 미워할까 봐 겁을 먹는다.", type: "a"}, {text: "그의 손길에 신음하며 그가 일렁이는 눈을 지켜본다.", type: "b"}, {text: "걱정 끼쳐서 미안하다고 사과하며 그를 달랜다.", type: "c"}, {text: "치료를 하든 화를 내든 가만히 내버려 둔다.", type: "d"}] },
+            { q: "그가 낮은 목소리로 당신의 이름을 불렀습니다. 욕망이 섞여 있습니다.", options: [{text: "그 목소리만으로도 심장이 내려앉아 홀린 듯 그를 향한다.", type: "a"}, {text: "못 들은 척하다 그가 초조해질 때쯤 천천히 고개를 든다.", type: "b"}, {text: "밝은 미소를 지으며 무슨 일이냐고 다정하게 묻는다.", type: "c"}, {text: "귀찮다는 듯 건성으로 대답하거나 아예 반응하지 않는다.", type: "d"}] },
+            { q: "당신은 도망치려 하지만, 얼마 못 가 그의 손에 뒷덜미를 잡히고 맙니다.", options: [{text: "잡힌 순간 역시 나는 그의 손바닥 안이라는 사실에 좌절한다.", type: "a"}, {text: "그를 돌아보며 씩 웃는다. '생각보다 빨리 잡았네?'", type: "b"}, {text: "울먹이며 제발 놓아달라고 호소한다.", type: "c"}, {text: "저항하지 않고 무력하게 끌려간다.", type: "d"}] },
+            { q: "그가 당신의 진심을 의심하며 차가운 눈초리로 추궁합니다.", options: [{text: "그가 나를 믿어주지 않는 상황에 깊은 내상을 입는다.", type: "a"}, {text: "'믿기 싫으면 말든가.'라며 오히려 그의 의심을 부추긴다.", type: "b"}, {text: "그의 손을 마주 잡으며 진심을 다해 믿어달라고 애원한다.", type: "c"}, {text: "'생각하고 싶은 대로 생각해.'라며 해명조차 하지 않는다.", type: "d"}] },
+            { q: "마주친 그의 눈동자가 포식자처럼 당신을 꿰뚫어 봅니다.", options: [{text: "뱀 앞에 선 쥐처럼 얼어붙어 움직일 수 없다.", type: "a"}, {text: "피하지 않고 빤히 마주 보며 그의 인내심을 시험한다.", type: "b"}, {text: "수줍게 웃으며 먼저 시선을 피하고 얼굴을 붉힌다.", type: "c"}, {text: "아무런 감정의 동요 없이 시선을 거둔다.", type: "d"}] },
+            { q: "그의 어깨에 기대어 잠들었다 깼을 때, 그가 당신을 쳐다보고 있습니다.", options: [{text: "그가 나를 지켜보고 있다는 사실에 묘한 충족감을 느낀다.", type: "a"}, {text: "자는 척하다가 갑자기 눈을 떠 그를 당황하게 만든다.", type: "b"}, {text: "깨어나자마자 그의 품으로 파고들며 더 어리광을 부린다.", type: "c"}, {text: "무덤덤하게 일어나 앉으며 어깨가 저리지 않았냐고 묻는다.", type: "d"}] },
+            { q: "당신이 떠나려 하자, 그가 무너질 듯한 표정으로 옷자락을 붙잡습니다.", options: [{text: "그가 나를 필요로 한다는 사실에 기쁨과 통증을 동시에 느낀다.", type: "a"}, {text: "희열을 느끼며 한동안 그를 더 애태우다 남는다.", type: "b"}, {text: "그의 눈물을 닦아주며 절대 떠나지 않겠다고 약속한다.", type: "c"}, {text: "붙잡는 손을 가차 없이 뿌리치고 문을 나선다.", type: "d"}] },
+            { q: "단둘이 있는 공간, 공기가 얼어붙은 듯한 정적이 흐릅니다.", options: [{text: "내가 무슨 잘못을 했는지 몰라 전전긍긍한다.", type: "a"}, {text: "침묵을 즐기며 그의 인내심을 자극하는 행동을 한다.", type: "b"}, {text: "어색함을 바꾸려 다정한 말을 건네며 먼저 다가간다.", type: "c"}, {text: "정적이 흐르든 말든 전혀 신경 쓰지 않는다.", type: "d"}] },
+            { q: "참다못한 당신이 그를 향해 날 선 화를 쏟아냅니다.", options: [{text: "화를 내면서도 그의 반응이 두려워 목소리가 떨린다.", type: "a"}, {text: "그를 가장 아프게 찌를 수 있는 말을 골라 내뱉는다.", type: "b"}, {text: "결국 울음이 터져버려 화를 내는 건지 응석인지 모르게 된다.", type: "c"}, {text: "화를 내는 것도 에너지가 아까워 그냥 자리를 피해버린다.", type: "d"}] },
+            { q: "당신이 열에 들떠 신음하며 누워 있습니다. 그가 밤새 곁을 지킵니다.", options: [{text: "그가 떠날까 봐 그의 손을 놓지 못하고 웅얼거린다.", type: "a"}, {text: "정신이 몽롱한 상태에서 그에게 더 야릇하게 매달린다.", type: "b"}, {text: "간호해주는 그가 고마워 아픈 와중에도 미소를 지어 보인다.", type: "c"}, {text: "그가 있든 없든 약을 먹고 잠에만 집중한다.", type: "d"}] },
+            { q: "그를 밀어내야만 했던 처절한 비밀을 그가 알아버렸습니다.", options: [{text: "수치심에 고개를 들지 못하고 절망한다.", type: "a"}, {text: "이미 다 알았으면 이제 어쩔 거냐며 당당하게 나온다.", type: "b"}, {text: "모든 것을 털어놓고 그의 품에서 엉엉 울며 위로받는다.", type: "c"}, {text: "알게 된 건 어쩔 수 없다고 생각하며 덤덤하게 기다린다.", type: "d"}] },
+            { q: "당신이 그를 피하자, 그가 폭주하며 당신의 앞길을 막아섭니다.", options: [{text: "분노에 겁을 먹으면서도 지독한 집착에 안도감을 느낀다.", type: "a"}, {text: "비웃는 얼굴로 정면으로 마주한다.", type: "b"}, {text: "그가 상처받았을까 봐 마음이 약해져 결국 먼저 사과한다.", type: "c"}, {text: "막아서든 말든 비켜 지나가려 하며 철저히 무시한다.", type: "d"}] },
+            { q: "당신이 그 앞에서 참아왔던 눈물을 터뜨리고 맙니다.", options: [{text: "그의 가슴에 얼굴을 묻고 제발 사랑해달라고 속으로 외친다.", type: "a"}, {text: "눈물을 흘리면서도 그의 눈을 응시하며 죄책감을 느끼게 만든다.", type: "b"}, {text: "아이처럼 엉엉 울며 그가 달래주는 온기를 탐닉한다.", type: "c"}, {text: "소리 없이 눈물만 흘리다 스스로 닦아내고 돌아선다.", type: "d"}] },
+            { q: "그와 단둘이 아무도 모르는 곳으로 여행을 왔습니다.", options: [{text: "낯선 곳에서 오직 그밖에 없다는 사실에 불안해하며 의지한다.", type: "a"}, {text: "새로운 장소에서 벌일 유희에 들떠 그를 유혹한다.", type: "b"}, {text: "평범한 연인처럼 손을 잡고 걷는 행복에 감사하며 웃는다.", type: "c"}, {text: "장소가 바뀌었을 뿐 그와 적당한 거리를 유지한다.", type: "d"}] },
+            { q: "그가 당신의 사랑을 시험하기 위해 위험한 상황에 던집니다.", options: [{text: "원하는 대답을 얻을 때까지 자신을 망가뜨리며 순종한다.", type: "a"}, {text: "그가 원하는 게 뭔지 알고 그것을 줄 듯 말 듯 조종한다.", type: "b"}, {text: "상처받으면서도 실망시키지 않으려 최선을 다한다.", type: "c"}, {text: "시험 자체를 거부하고 냉소적으로 대응한다.", type: "d"}] },
+            { q: "그가 당신을 정말로 떠나보내려 짐을 챙기기 시작합니다.", options: [{text: "무릎을 꿇고 빌어서라도 그를 붙잡으려 한다.", type: "a"}, {text: "여유 있는 척하지만 손을 떨며 며칠이나 가나 보자고 한다.", type: "b"}, {text: "울며불며 매달리며 당신 없이는 살 수 없다고 고백한다.", type: "c"}, {text: "그가 나가는 것을 지켜보며 드디어 자유가 왔다고 생각한다.", type: "d"}] },
+            { q: "스치듯 지나가는 그의 손가락 끝이 당신의 피부에 닿았습니다.", options: [{text: "그 짧은 접촉만으로도 온몸이 뜨거워진다.", type: "a"}, {text: "스친 부위를 매만지며 그를 향해 은밀한 미소를 보낸다.", type: "b"}, {text: "깜짝 놀라며 수줍게 웃고는 그의 손을 살며시 잡는다.", type: "c"}, {text: "닿았는지조차 몰랐다는 듯 무심하게 제 할 일을 한다.", type: "d"}] },
+            { q: "식사 시간 내내 그가 당신이 먹는 모습을 관찰하듯 지켜봅니다.", options: [{text: "긴장감을 느끼며 그가 좋아하는 방식으로 고분고분하게 먹는다.", type: "a"}, {text: "일부러 그를 자극하는 행동을 하며 반응을 살핀다.", type: "b"}, {text: "밝게 웃으며 '같이 먹을래요?'라며 말을 건넨다.", type: "c"}, {text: "보든 말든 상관하지 않고 평소와 다름없이 식사를 마친다.", type: "d"}] },
+            { q: "격렬한 다툼 후, 싸늘한 정적 속에서 그가 거칠게 안아옵니다.", options: [{text: "그의 폭력적인 다정함에 몸을 맡기며 이것 또한 사랑이라 믿는다.", type: "a"}, {text: "반항하다가도 결정적인 순간에 그를 받아들이며 상황을 역전시킨다.", type: "b"}, {text: "울면서 그를 마주 안아주고 우리 제발 싸우지 말자고 다독인다.", type: "c"}, {text: "그의 손길에 아무런 반응도 하지 않고 가만히 있는다.", type: "d"}] },
+            { q: "그가 묻습니다. '넌 도대체 나한테 원하는 게 뭐야?'", options: [{text: "'그냥... 당신이 나를 절대 버리지 않는 거.'", type: "a"}, {text: "'당신이 나 없이는 미쳐버리는 거 보고 싶어.'", type: "b"}, {text: "'나를 진심으로 사랑해주고 아껴주는 거요.'", type: "c"}, {text: "'아무것도. 그냥 나 좀 내버려 둬.'", type: "d"}] },
+            { q: "이 지독한 이야기의 끝에서, 당신은 어떤 결말을 맞이합니까?", options: [{text: "모든 자유를 포기하고 그가 만든 새장 속에서 영원히 안주하는 삶.", type: "a"}, {text: "평생 지워지지 않는 흉터처럼 서로에게 상처를 남기는 관계.", type: "b"}, {text: "과거를 딛고 서로를 치유하며 평범한 행복을 찾아가는 것.", type: "c"}, {text: "그가 잠든 사이, 혹은 그가 보는 앞에서 흔적도 없이 사라지는 이별.", type: "d"}] }
+        ]
+    };
+    const results = {
+        gong: {
+            a: { 
+                title: "【집착광공】", 
+                quote: "“말했잖아. 내 허락 없이는 죽는 것조차 안 된다고.”",
+                example: "대표 캐릭터: 《야화첩》 윤승호",
+                scene: "“밤새도록 그려야 할 것이다. 내 눈앞에서 네가 가장 잘하는 짓을 해보란 말이다.”",
+                desc: "원하는 것은 반드시 손에 넣어야 하며, 수단과 방법을 가리지 않습니다. 상대의 세계를 온전히 장악할 때 비로소 안도감을 느낍니다." 
+            },
+            b: { 
+                title: "【능글계략공】", 
+                quote: "“울지마. 네가 울면 내가 이 판을 짠 보람이 없잖아, 그치?”",
+                example: "대표 캐릭터: 《시멘틱 에러》 장재영",
+                scene: "“에러 났네? 예고장 보냈잖아. 이제부터 내가 너 진짜 괴롭힐 거거든.”",
+                desc: "상대의 심리를 쥐락펴락하며 상황을 조종하는 여유로운 지략가입니다. 여유로운 미소 뒤에 치밀한 계획을 숨기고 있습니다." 
+            },
+          c: { 
+               title: "【대형견다정공】", 
+               quote: "“네가 나를 망가뜨려도 좋아. 네 옆에만 있게 해준다면.”",
+               example: "대표 캐릭터: 《오메가 트라우마》 태겸",
+               scene: "“내가 너 좋아한다고 했잖아. 네가 오메가든 아니든 상관없어. 나한테는 그냥 너야.”",
+               desc: "사랑하는 이를 위해 모든 것을 내줄 준비가 된 구원자 타입입니다. 하지만 당신의 그 무조건적인 다정함과 헌신은 때로 상대에게 거부할 수 없는 가장 거대한 족쇄가 됩니다.",
+    // 👇 이스터 에그 데이터 추가
+               eggTitle: "【진정한 대형견 : 상립 정상현🐶】",
+               eggQuote: "“내가 보플내내 이 반지 계속 끼고 있어서 데뷔 했으니까 형도 꼭 데뷔해야 해”", // 최근 대화에서 가져온 리얼한 대사!
+               eggExample: "대표 캐릭터: 립우형의 영원한 강아지 정상현",
+               eggScene: "“난 형만의 푸딩이야🍮🐶.”"
+            },
+
+            d: { 
+                title: "【무심강공】", 
+                quote: "“귀찮게 굴지 마. ...그런데 왜 내 눈앞에서 안 사라지는 거지?”",
+                example: "대표 캐릭터: 《코드네임 아나스타샤》 제냐",
+                scene: "“살고 싶으면 내 뒤에 딱 붙어 있어. 허튼짓하면 네 머리에 구멍 나는 게 먼저일 테니까.”",
+                desc: "차갑고 건조한 매력의 소유자. 감정에 휘둘리는 것을 혐오하지만, 당신의 서늘한 눈빛은 상대를 가장 안달 나게 만듭니다." 
+            }
+        },
+        su: {
+            a: { 
+                title: "【자낮유약수】", 
+                quote: "“나를 버리지 마세요... 당신이 없으면 난 아무것도 아니니까.”",
+                example: "대표 캐릭터: 《야화첩》 백나겸",
+                scene: "“나으리... 저를 버리지 마십시오. 제발, 저를 다시 그릴 수 있게 해주세요.”",
+                desc: "상대의 강한 집착에 공포를 느끼면서도 그 속에서 기묘한 안정감을 찾는 타입입니다. 스스로를 낮추고 상대에게 전적으로 의존합니다." 
+            },
+            b: { 
+                title: "【유혹지랄수】", 
+                quote: "“날 가질 수 있을 것 같아? 미쳐서 날뛰는 건 당신 쪽일 텐데.”",
+                example: "대표 캐릭터: 《시멘틱 에러》 추상우",
+                scene: "“선배가 뭔데 내 일상을 망쳐요? ...근데 왜 자꾸 눈앞에 알짱거리는 건데!”",
+                desc: "공의 머리 꼭대기에서 노는 진정한 고수입니다. 반항적인 태도나 치명적인 유혹으로 관계의 긴장감을 주도합니다." 
+            },
+            c: { 
+                title: "【햇살다정수】", 
+                quote: "“당신이 어떤 괴물이라도 상관없어요. 내가 사랑하니까.”",
+                example: "대표 캐릭터: 《청사과 낙원》 명재원",
+                scene: "“난 너랑 있으면 다 좋아. 네가 웃는 게 세상에서 제일 예쁘거든.”",
+                desc: "어둠 속에서도 빛을 잃지 않는 긍정의 아이콘. 당신의 순수함은 집착광공조차 정화시키거나 소유욕에 미치게 만듭니다." 
+            },
+            d: { 
+                title: "【무심철벽수】", 
+                quote: "“마음대로 하세요. 몸은 가질 수 있어도 내 마음은 안 될 테니까.”",
+                example: "대표 캐릭터: 《체크메이트》 이원",
+                scene: "“날 이겼다고 생각하지 마. 네가 내 몸은 가져도 내 자존심까지 꺾을 순 없을 테니까.”",
+                desc: "어떤 자극에도 미동도 하지 않는 무색무취의 매력. 당신의 무심함이야말로 상대를 가장 미치게 만드는 파괴적인 무기입니다." 
+            }
+        }
+    };
+
+
+
+
+    let currentIdx = 0;
+    let scores = { a:0, b:0, c:0, d:0 };
+    let currentMode = '';
+    let currentQuestions = [];
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function initTest(mode) {
+        currentMode = mode;
+        currentQuestions = db[mode];
+        document.getElementById('start-page').classList.add('hidden');
+        document.getElementById('quiz-page').classList.remove('hidden');
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const qData = currentQuestions[currentIdx];
+        document.getElementById('question-text').innerHTML = `<h2>${qData.q}</h2>`;
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        const shuffledOptions = shuffle([...qData.options]);
+        shuffledOptions.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.innerText = opt.text;
+            btn.onclick = () => nextQuestion(opt.type);
+            container.appendChild(btn);
+        });
+
+        document.getElementById('progress-inner').style.width = `${(currentIdx / currentQuestions.length) * 100}%`;
+    }
+
+    function nextQuestion(type) {
+        scores[type]++;
+        currentIdx++;
+        if (currentIdx < currentQuestions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-page').classList.add('hidden');
+        document.getElementById('result-page').classList.remove('hidden');
+
+        const maxScore = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        const resultData = results[currentMode][maxScore];
+
+        const titleEl = document.getElementById('result-title');
+        const quoteEl = document.getElementById('result-quote');
+        const descEl = document.getElementById('result-desc');
+
+        // 기본 결과 출력
+        titleEl.innerText = resultData.title;
+        quoteEl.innerText = resultData.quote;
+
+        descEl.innerHTML = `
+            <div id="egg-trigger" style="color: #bbb; font-size: 0.9rem; margin-bottom: 10px; cursor: pointer; text-decoration: underline;">
+                ${resultData.example}
+            </div>
+            <div id="egg-scene" style="color: var(--bl-gold); font-weight: bold; margin-bottom: 15px; border-left: 2px solid var(--bl-gold); padding-left: 10px;">
+                ${resultData.scene}
+            </div>
+            <div id="egg-desc" style="line-height: 1.6;">
+                ${resultData.desc}
+            </div>
+        `;
+
+        // 🐶 [이스터 에그] 대형견 다정공(Gong-C)일 때만 작동
+        if (currentMode === 'gong' && maxScore === 'c') {
+            const trigger = document.getElementById('egg-trigger');
+            
+            trigger.onclick = function() {
+                // 상현이 정보로 데이터 교체
+                titleEl.innerText = resultData.eggTitle;
+                titleEl.style.color = "#ff69b4"; // 상현이만의 핑크색 포인트
+                titleEl.style.textShadow = "0 0 15px rgba(255, 105, 180, 0.5)";
+                
+                quoteEl.innerText = resultData.eggQuote;
+                quoteEl.style.fontFamily = "'Nanum Pen Script', cursive"; // 좀 더 귀여운 폰트 느낌 (설정 시)
+                
+                trigger.innerText = resultData.eggExample;
+                trigger.style.textDecoration = "none";
+                trigger.style.color = "#ff69b4";
+                
+                document.getElementById('egg-scene').innerText = resultData.eggScene;
+                document.getElementById('egg-desc').innerText = "🐶🤍🐰";
+                
+                // 중복 클릭 방지 및 효과
+                trigger.onclick = null; 
+                console.log("Easter Egg Activated: Sang-hyeon Mode");
+            };
+        }
+    }
+
+
+</script>
+
+</body>
+</html>
